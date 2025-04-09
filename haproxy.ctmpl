@@ -1,0 +1,30 @@
+global
+    log /dev/log local0 info
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+    maxconn 4000
+
+defaults
+    log global
+    timeout connect 5000s
+    timeout client  50000s
+    timeout server  50000s
+
+frontend be-frontend
+    bind *:8080
+    default_backend be-servers
+
+backend be-servers
+    balance roundrobin
+    {{ range service "be-server" }}
+    server {{ .ID }} {{ .Address }}:{{ .Port }} check
+    {{ end }}
+
+resolvers consul
+    nameserver consul 127.0.0.1:8600
+    hold valid 10s
+
