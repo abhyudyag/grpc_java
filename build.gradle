@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.google.protobuf' version '0.9.4'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+application {
+    mainClass = 'be1.GrpcServer'
+    mainClass = 'be2.GrpcServer'
+}
+
+dependencies {
+    implementation 'io.grpc:grpc-netty-shaded:1.59.0'
+    implementation 'io.grpc:grpc-protobuf:1.59.0'
+    implementation 'io.grpc:grpc-stub:1.59.0'
+    implementation 'io.grpc:grpc-services:1.59.0'
+    implementation 'com.google.protobuf:protobuf-java:3.25.1'
+    implementation 'jakarta.annotation:jakarta.annotation-api:1.3.5'
+    testImplementation 'junit:junit:4.13.2'
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.25.1'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.59.0'
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                grpc {}
+            }
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+jar {
+    enabled = false // Disable default jar task to avoid conflict
+}
+
+task be1Jar(type: Jar) {
+    archiveBaseName = 'be1-server'
+    manifest {
+        attributes 'Main-Class': 'be1.GrpcServer'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar // include default jar content (classes, resources, etc.)
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+task be2Jar(type: Jar) {
+    archiveBaseName = 'be2-server'
+    manifest {
+        attributes 'Main-Class': 'be2.GrpcServer'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+// Make them run with build
+build.dependsOn be1Jar, be2Jar
