@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package be2;
+
+option java_multiple_files = true;
+option java_package = "com.example.generated";
+
+service NameService {
+  rpc GetName (NameRequest) returns (NameResponse);
+}
+
+message NameRequest {
+  string text = 1;
+}
+
+message NameResponse {
+  string message = 1;
+}
+
+service AgeService {
+  rpc GetAge (AgeRequest) returns (AgeResponse);
+}
+
+message AgeRequest {
+  string num = 1;
+}
+
+message AgeResponse {
+  string body = 1;
+}

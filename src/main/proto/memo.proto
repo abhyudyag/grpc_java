@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package be1;
+
+option java_multiple_files = true;
+option java_package = "com.example.generated";
+
+service MemoService {
+  rpc GetMemo (MemoRequest) returns (MemoResponse);
+}
+
+message MemoRequest {
+  string id = 1;
+}
+
+message MemoResponse {
+  string message = 1;
+}
+
+service NoteService {
+  rpc GetNote (NoteRequest) returns (NoteResponse);
+}
+
+message NoteRequest {
+  string title = 1;
+}
+
+message NoteResponse {
+  string body = 1;
+}
+
+service MyService {
+  rpc GetMy (MyRequest) returns (MyResponse);
+}
+
+message MyRequest {
+  string id = 1;
+}
+
+message MyResponse {
+  string message = 1;
+}
